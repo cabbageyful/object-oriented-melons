@@ -3,19 +3,19 @@ class AbstractMelonOrder(object):
     """   creates default melon order  """
 
 
-    def __init__(self, species, qty, shipped, order_type, tax):
+    def __init__(self, species, qty):
         """ creates default melon order attributes    """
 
         self.species = species
         self.qty = qty
         self.shipped = False
-        self.order_type = order_type
-        self.tax = tax
     
     def get_total(self):
         """Calculate price."""
 
         base_price = 5
+        if self.species == 'Christmas melon':
+            base_price = 7.5
         total = (1 + self.tax) * self.qty * base_price
         return total
 
@@ -31,22 +31,43 @@ class DomesticMelonOrder(AbstractMelonOrder):
     """A domestic (in the US) melon order."""
 
     def __init__(self, species, qty):
-        super(DomesticMelonOrder, self).__init__(species, qty, False, 'domestic', .08)
+        super(DomesticMelonOrder, self).__init__(species, qty)
 
-    # def get_total(self):
-    #     return super(DomesticMelonOrder, self).get_total
-    #     """Calculate price."""
-
+        self.tax = 0.08
+        self.order_type = 'Domestic'
       
 
 class InternationalMelonOrder(AbstractMelonOrder):
     """An international (non-US) melon order."""
 
     def __init__(self, species, qty, country_code):
+        super(InternationalMelonOrder, self).__init__(species, qty)
+
         self.country_code = country_code
-        super(InternationalMelonOrder, self).__init__(species, qty, False,
-            'international', .17)
+        self.tax = 0.17
+        self.order_type = 'International'
+
+
+    def get_total(self):
+        """Calculate price."""
+            # base_price += 3             # adds $3 for orders less than 10
         
+        intl_total = super(InternationalMelonOrder, self).get_total()
+        if self.qty < 10: 
+            intl_total += 3
+            return intl_total
+
+        else:
+            return intl_total
+        
+        # base_price = 5
+        # if self.species == 'Christmas melon':
+        #     base_price = 7.5
+        
+        # total = (1 + self.tax) * self.qty * base_price
+        # return total
+
+
 
     def get_country_code(self):
         """Return the country code."""
